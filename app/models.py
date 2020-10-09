@@ -60,6 +60,9 @@ class User(db.Model, UserMixin):
         # return followed
         own = Post.query.filter_by(user_id=self.id)
         return followed.union(own).order_by(Post.timestamp.desc())
+
+    def own_posts(self):
+        return Post.query.filter_by(user_id=self.id)
         
 
 class Post(db.Model):

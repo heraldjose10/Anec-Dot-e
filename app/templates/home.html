@@ -2,12 +2,22 @@
 
 {% block content %}
 <h1>Hi, {{ current_user.username }}!</h1>
+    {% if form %}
+    <form action="", method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.post.label }}<br>
+            {{ form.post(cols=32,rows=4) }}<br>
+            {% for e in form.post.errors %}
+            <span style="color: red;">[{{ e }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    {% endif %}
     <h2>Recent Posts</h2>
 
     {% for post in posts %}
-    <h2>
-        <a href="{{post.link}}">{{post.title}}</a>
-        <p>{{post.author.username}}</p>
-    </h2>
+    {% include '_posts.html' %}
     {% endfor %}
 {% endblock %}

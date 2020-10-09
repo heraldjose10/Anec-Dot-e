@@ -1,32 +1,27 @@
 from app import app
 from app import db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm
 from flask import render_template, url_for, redirect, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User,Post
 from werkzeug.urls import url_parse
 from datetime import datetime
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/',methods=['POST','GET'])
+@app.route('/index',methods=['POST','GET'])
 @login_required
 def index():
-
-    posts = [
-        {
-            'author': {'username': 'heraldjos'},
-            'title': 'Im Up',
-            'link': 'https://www.fullstackpython.com/flask-blueprints-blueprint-examples.html'
-        },
-        {
-            'author': {'username': 'iamgodking'},
-            'title': 'How to win top lane',
-            'link': 'http://charlesleifer.com/blog/saturday-morning-hack-a-little-note-taking-app-with-flask/'
-        }
-    ]
-
-    return(render_template('home.html', title='Anecdote-Home', posts=posts))
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body = form.post.data,author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Added your post')
+        return redirect(url_for('index'))
+    
+    posts=current_user.followed_posts().all()
+    return(render_template('home.html', title='Anecdote-Home', form=form,posts=posts))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -83,18 +78,7 @@ def register():
 def user(username):
     form = EmptyForm()
     user = User.query.filter_by(username=username).first_or_404()
-    posts = [
-        {
-            'author': user,
-            'title': 'Im Up',
-            'link': 'https://www.fullstackpython.com/flask-blueprints-blueprint-examples.html'
-        },
-        {
-            'author': user,
-            'title': 'How to win top lane',
-            'link': 'http://charlesleifer.com/blog/saturday-morning-hack-a-little-note-taking-app-with-flask/'
-        }
-    ]
+    posts = current_user.own_posts().all()
     return render_template('user.html', title='Profile', user=user, posts=posts,form=form)
 
 
@@ -167,3 +151,9 @@ def unfollow(username):
 
     else:
         return redirect(url_for('index'))
+
+@app.route('/explore')
+@login_required
+def explore():
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('home.html',title='Explore',posts=posts)

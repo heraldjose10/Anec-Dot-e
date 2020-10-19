@@ -17,4 +17,4 @@ class Config():
     MAIL_USE_TLS = False
     ADMINS = ['heraldjose10@gmail.com']
 
-    POSTS_PER_PAGE = 3
+    POSTS_PER_PAGE = 5

@@ -21,3 +21,5 @@ class Config():
     ADMINS = ['heraldjose10@gmail.com']
 
     POSTS_PER_PAGE = 5
+
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')

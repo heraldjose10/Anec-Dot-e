@@ -27,3 +27,14 @@ class EmptyForm(FlaskForm):
 class PostForm(FlaskForm):
     post = TextAreaField('Whats on Your Mind NOW?',validators=[DataRequired(),Length(min=1,max=140)])
     submit = SubmitField('Submit')
+
+
+class Searchform(FlaskForm):
+    q = StringField('Search',validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        if 'formdata' not in kwargs:
+            kwargs['formdata'] = request.args
+        if 'csrf_enabled' not in kwargs:
+            kwargs['csrf_enabled'] = False
+        super(Searchform,self).__init__(*args,**kwargs)

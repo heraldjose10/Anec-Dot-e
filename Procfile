@@ -1,1 +1,1 @@
-web :flask db upgrade; gunicorn Anect-dote:app
+web :flask db upgrade; gunicorn main:app

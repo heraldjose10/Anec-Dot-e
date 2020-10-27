@@ -7,9 +7,11 @@
         </td>
         <td>
             {{ post.body }}<br>
-            <a href="{{ url_for('main.user',username=post.author.username) }}">
-                {{ post.author.username }}
-            </a>
+                <span class="user_popup" >
+                    <a href="{{ url_for('main.user',username=post.author.username) }}">
+                        {{ post.author.username }}
+                    </a>
+                </span>
         </td>
     </tr>
     <tr>

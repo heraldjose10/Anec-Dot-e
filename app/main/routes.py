@@ -2,8 +2,8 @@ from datetime import datetime
 from flask import render_template,request,redirect,flash,url_for,current_app
 from flask_login import current_user, login_required
 from app import db
-from app.main.forms import EditProfileForm, EmptyForm, PostForm
-from app.models import User, Post
+from app.main.forms import EditProfileForm, EmptyForm, PostForm, MessageForm
+from app.models import User, Post ,Message
 from app.main import bp
 
 
@@ -139,3 +139,16 @@ def unfollow(username):
     else:
         return redirect(url_for('main.index'))
 
+
+@bp.route('/send_message/<recipient>',methods=['POST','GET'])
+@login_required
+def send_message(recipient):
+    user = User.query.filter_by(username=recipient).first_or_404()
+    form = MessageForm()
+    if form.validate_on_submit():
+        msg = Message(author=current_user,recipient=user,body=form.message.data)
+        db.session.add(msg)
+        db.session.commit()
+        flash('Your Message has been sent')
+        return redirect(url_for('main.user',username=recipient))
+    return render_template('send_message.html',title='Messenger',form=form,recipient=recipient)

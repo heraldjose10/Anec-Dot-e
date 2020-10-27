@@ -28,6 +28,15 @@
                         <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                     {% endif %}
                 </ul>
+                {% if g.search_form %}
+                <form class="navbar-form navbar-left" method="get"
+                        action="{{ url_for('main.search') }}">
+                    <div class="form-group">
+                        {{ g.search_form.q(size=20, class='form-control',
+                            placeholder=g.search_form.q.label.text) }}
+                    </div>
+                </form>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -49,4 +58,5 @@
 {% block scripts %}
     {{ super() }}
     {{ moment.include_moment() }}
+    <script src="{{ url_for('static',filename='popover.js') }}"></script>
 {% endblock %}

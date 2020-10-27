@@ -1,10 +1,12 @@
 from datetime import datetime
-from flask import render_template,request,redirect,flash,url_for,current_app
+from flask import render_template, request, redirect, flash, url_for, current_app
 from flask_login import current_user, login_required
 from app import db
 from app.main.forms import EditProfileForm, EmptyForm, PostForm, MessageForm
 from app.models import User, Post ,Message
 from app.main import bp
+from flask import g
+from app.main.forms import Searchform
 
 
 @bp.before_request
@@ -12,6 +14,7 @@ def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+        g.search_form = Searchform()
 
 
 @bp.route('/', methods=['POST', 'GET'])
@@ -140,6 +143,7 @@ def unfollow(username):
         return redirect(url_for('main.index'))
 
 
+<<<<<<< HEAD
 @bp.route('/send_message/<recipient>',methods=['POST','GET'])
 @login_required
 def send_message(recipient):
@@ -152,3 +156,25 @@ def send_message(recipient):
         flash('Your Message has been sent')
         return redirect(url_for('main.user',username=recipient))
     return render_template('send_message.html',title='Messenger',form=form,recipient=recipient)
+=======
+@bp.route('/search')
+@login_required
+def search():
+    if not g.search_form.validate():
+        return redirect(url_for('main.explore'))
+    page = request.args.get('page', 1, int)
+    posts, total = Post.search(
+        g.search_form.q.data, page, current_app.config['POSTS_PER_PAGE'])
+    next_url = url_for('search', q=g.search_form.q.data, page=page +
+                       1) if page*current_app.config['POSTS_PER_PAGE'] < total else None
+    prev_url = url_for('search', q=g.search_form.q.data,
+                       page=page-1) if page > 1 else None
+    return render_template('search.html', title='Search', posts=posts, next_url=next_url, prev_url=prev_url)
+
+@bp.route('/user/<username>/popup')
+@login_required
+def user_popup(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    form = EmptyForm()
+    return render_template('user_popup.html',form=form,user=user)
+>>>>>>> origin/master

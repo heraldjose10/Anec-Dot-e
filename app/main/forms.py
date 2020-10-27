@@ -29,6 +29,18 @@ class PostForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+<<<<<<< HEAD
 class MessageForm(FlaskForm):
     message = TextAreaField('Message',validators=[DataRequired(),Length(min=1,max=140)])
     submit = SubmitField('Send')
+=======
+class Searchform(FlaskForm):
+    q = StringField('Search',validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        if 'formdata' not in kwargs:
+            kwargs['formdata'] = request.args
+        if 'csrf_enabled' not in kwargs:
+            kwargs['csrf_enabled'] = False
+        super(Searchform,self).__init__(*args,**kwargs)
+>>>>>>> origin/master
